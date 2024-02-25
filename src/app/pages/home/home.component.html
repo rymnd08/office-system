@@ -1,0 +1,149 @@
+<app-nav />
+
+<div class="container mt-3">
+  <h3>Computation</h3>
+  <!-- <button class="btn btn-info" routerLink="/computation">navigate to something</button> -->
+
+  <form class="inline-form mt-3" [formGroup]="landForm" (ngSubmit)="handleSubmit()">
+
+    <div class="row align-items-end">
+
+      <!-- land options  -->
+      <div class="col mb-3">
+        <div class="form-group">
+          <label for="land" class="form-label">Land</label>
+          <select id="land" class="form-select" (change)="handleLandChange()" #landSelect formControlName="land">
+            <option value="">Select land</option>
+            <!-- <optgroup label="Residential">
+              @for (urbandLand of landData; track $index) {
+                <option value="{{urbandLand.id}}"> {{urbandLand.landName}} </option>
+              }
+            </optgroup> -->
+            <optgroup label="Agricultural">
+              @for (land of agriLand; track $index) {
+                <option value="{{land.id}}"> {{land.landName }} </option>
+              }
+            </optgroup>
+          </select>
+        </div>
+      </div>
+
+      <!-- class options  -->
+      <div class="col mb-3">
+        <div class="form-group">
+          <label for="classType" class="form-label">Class</label>
+          <select id="classType" class="form-select" formControlName="classType">
+            <option value="">Select class</option>
+            @for (class of selectedClass; track $index) { 
+              <option [value]="class.id"> {{class.className}} </option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <!-- class options  -->
+      <div class="col mb-3">
+        <div class="form-group">
+          <label for="area" class="form-label">Area</label>
+          <input class="form-control" type="number" id="area" formControlName="area">
+        </div>
+      </div>
+
+      <!-- assessment level  -->
+      <div class="col mb-3">
+        <div class="form-group">
+          <label for="fairMarketValue" class="form-label">Assessment level</label>
+          <select id="fairMarketValue" class="form-select" formControlName="fairMarketValue">
+            <option value="" selected>Select class</option>
+
+            @for (lvl of assessmentLvl; track $index) {
+              <option [value]="lvl.id"> {{lvl.name}} </option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <div class="col mb-3">
+        <div class="d-flex" style="gap: .25rem;">
+          <button type="submit" class="btn btn-dark " [disabled]="!landForm.valid">Compute</button>
+          <button type="button" class="btn btn-secondary" (click)="resetData()">Reset</button>
+        </div>
+      </div>
+    
+    </div>
+    <!-- end row  -->
+
+    @if (computedLand) {
+
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>Land</th>
+            <th>Class</th>
+            <th>Area</th>
+            <th>Fair Market Value</th>
+            <th>Market Value</th>
+            <th>Assessed Value</th>
+            <th>Previous Market Value</th>
+            <th>Previous Assessed Value</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tbody>
+            @for (land of computedLand; track $index) {
+              <tr>
+                <td> {{land.land}} </td>
+                <td> {{land.classType}} </td>
+                <td> {{land.area}} </td>
+                <td> {{land.fairmarketValue}} </td>
+                <td> {{land.marketValue2011.toFixed(2)}} </td>
+                <td> {{land.assessedValue2011.toFixed(2)}} </td>
+                <td> {{land.marketValue2003.toFixed(2)}} </td>
+                <td> {{land.assessedValue2003.toFixed(2)}} </td>
+              </tr>
+            }
+            @empty {
+              <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>no data to compute</td>
+                <td></td>
+                <td></td>
+                <td></td>
+              </tr>
+            }
+            @if (computedLand.length > 0) {
+              <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+              </tr>
+              <tr class="fw-bold ">
+                <td class="text-success">TOTAL</td>
+                <td class="text-success"></td>
+                <td class="text-success"></td>
+                <td class="text-success"></td>
+                <td class="text-success"> {{totalMarketValue.toFixed(2)}} </td>
+                <td class="text-success"> {{totalAssessedValue.toFixed(2)}} </td>
+                <td class="text-success">{{totalPrevMarketValue.toFixed(2)}}</td>
+                <td class="text-success">{{totalPrevAssessedValue.toFixed(2)}}</td>
+              </tr>
+            }
+          </tbody>
+      </table>
+
+    }
+
+  </form>
+  <!-- end form  -->
+
+</div>
+
+
