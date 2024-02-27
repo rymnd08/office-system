@@ -8,22 +8,32 @@
 
     <div class="row align-items-end">
 
-      <!-- land options  -->
+      <!-- land kind  -->
       <div class="col mb-3">
         <div class="form-group">
-          <label for="land" class="form-label">Land</label>
-          <select id="land" class="form-select" (change)="handleLandChange()" #landSelect formControlName="land">
+          <label for="landType" class="form-label">Kind</label>
+          <select id="landType" class="form-select" formControlName="landType" (change)="handleLandTypeChange($event)">
+            <option value="">Select kind</option>
+            @for (landType of landData; track landType.id) {
+              <option value="{{landType.id}}" >{{landType.landType}}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <!-- lands  -->
+      <div class="col mb-3">
+        <div class="form-group">
+          <label for="land" class="form-label">
+            {{selectedLandType ? selectedLandType.landType : 'Land'}}
+          </label>
+          <select id="land" class="form-select" formControlName="land" (change)="handleLandChange($event)">
             <option value="">Select land</option>
-            <!-- <optgroup label="Residential">
-              @for (urbandLand of landData; track $index) {
-                <option value="{{urbandLand.id}}"> {{urbandLand.landName}} </option>
+            @if (selectedLandType) {
+              @for (land of selectedLandType.data; track $index) {
+                <option value="{{land.id}}">{{land.landName}}</option>
               }
-            </optgroup> -->
-            <optgroup label="Agricultural">
-              @for (land of agriLand; track $index) {
-                <option value="{{land.id}}"> {{land.landName }} </option>
-              }
-            </optgroup>
+            }
           </select>
         </div>
       </div>
@@ -32,10 +42,12 @@
       <div class="col mb-3">
         <div class="form-group">
           <label for="classType" class="form-label">Class</label>
-          <select id="classType" class="form-select" formControlName="classType">
+          <select id="classType" class="form-select" formControlName="classType" (change)="handleClassChange($event)">
             <option value="">Select class</option>
-            @for (class of selectedClass; track $index) { 
-              <option [value]="class.id"> {{class.className}} </option>
+            @if (selectedLand) {
+              @for (_class of selectedLand.classes; track $index) {
+                <option value="{{_class.id}}"> {{ _class.className }} </option>
+              }
             }
           </select>
         </div>
@@ -55,7 +67,6 @@
           <label for="fairMarketValue" class="form-label">Assessment level</label>
           <select id="fairMarketValue" class="form-select" formControlName="fairMarketValue">
             <option value="" selected>Select class</option>
-
             @for (lvl of assessmentLvl; track $index) {
               <option [value]="lvl.id"> {{lvl.name}} </option>
             }
@@ -66,7 +77,7 @@
       <div class="col mb-3">
         <div class="d-flex" style="gap: .25rem;">
           <button type="submit" class="btn btn-dark " [disabled]="!landForm.valid">Compute</button>
-          <button type="button" class="btn btn-secondary" (click)="resetData()">Reset</button>
+          <button type="reset" class="btn btn-secondary" (click)="resetData()">Reset</button>
         </div>
       </div>
     
@@ -81,11 +92,12 @@
             <th>Land</th>
             <th>Class</th>
             <th>Area</th>
-            <th>Fair Market Value</th>
+            <th>Kind</th>
             <th>Market Value</th>
             <th>Assessed Value</th>
-            <th>Previous Market Value</th>
-            <th>Previous Assessed Value</th>
+            <th>Previous MV</th>
+            <th>Previous AV</th>
+            <th>Delete</th>
           </tr>
         </thead>
         <tbody>
@@ -95,11 +107,12 @@
                 <td> {{land.land}} </td>
                 <td> {{land.classType}} </td>
                 <td> {{land.area}} </td>
-                <td> {{land.fairmarketValue}} </td>
+                <td> {{land.fairMarketValue}} </td>
                 <td> {{land.marketValue2011.toFixed(2)}} </td>
                 <td> {{land.assessedValue2011.toFixed(2)}} </td>
                 <td> {{land.marketValue2003.toFixed(2)}} </td>
                 <td> {{land.assessedValue2003.toFixed(2)}} </td>
+                <td><button type="button" class="btn btn-danger btn-sm" (click)="deleteLandRow(land.id)"><i class="bi bi-trash3"></i></button></td>
               </tr>
             }
             @empty {
@@ -124,6 +137,7 @@
                 <td></td>
                 <td></td>
                 <td></td>
+                <td></td>
               </tr>
               <tr class="fw-bold ">
                 <td class="text-success">TOTAL</td>
@@ -134,6 +148,7 @@
                 <td class="text-success"> {{totalAssessedValue.toFixed(2)}} </td>
                 <td class="text-success">{{totalPrevMarketValue.toFixed(2)}}</td>
                 <td class="text-success">{{totalPrevAssessedValue.toFixed(2)}}</td>
+                <td class="text-success"></td>
               </tr>
             }
           </tbody>
